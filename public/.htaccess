@@ -1,0 +1,79 @@
+# ============================================================
+# Ibrahim Azzouz Cars — Public .htaccess
+# URL rewriting + security hardening
+# ============================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /ibrahim-azzouz-cars/public/
+
+    # ----------------------------------------------------------
+    # Force HTTPS (uncomment in production)
+    # ----------------------------------------------------------
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # ----------------------------------------------------------
+    # Remove .php extension
+    # ----------------------------------------------------------
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}\.php -f
+    RewriteRule ^(.+?)\.php$ $1 [L,R=301]
+
+    # ----------------------------------------------------------
+    # Route admin/* to admin/*.php
+    # ----------------------------------------------------------
+    RewriteCond %{REQUEST_URI} ^/ibrahim-azzouz-cars/public/admin/(.+)$
+    RewriteCond %{REQUEST_URI} !\.php$
+    RewriteRule ^admin/(.+)$ admin/$1.php [L]
+
+    # ----------------------------------------------------------
+    # Route api/* to api/*.php
+    # ----------------------------------------------------------
+    RewriteCond %{REQUEST_URI} ^/ibrahim-azzouz-cars/public/api/(.+)$
+    RewriteCond %{REQUEST_URI} !\.php$
+    RewriteRule ^api/(.+)$ api/$1.php [L]
+
+    # ----------------------------------------------------------
+    # Default index fallback
+    # ----------------------------------------------------------
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# ============================================================
+# Security — deny access to sensitive files
+# ============================================================
+
+# Prevent directory listing
+Options -Indexes
+
+# Block common sensitive files
+<FilesMatch "\.(env|log|sql|ini|md|yml|yaml|bak)$">
+    Require all denied
+</FilesMatch>
+
+# ============================================================
+# MIME / compression (optional)
+# ============================================================
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css
+    AddOutputFilterByType DEFLATE application/javascript application/json
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png  "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType text/css   "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+
+# ============================================================
+# Custom error pages (optional)
+# ============================================================
+ErrorDocument 404 /ibrahim-azzouz-cars/public/index.php?error=404
+ErrorDocument 500 /ibrahim-azzouz-cars/public/index.php?error=500

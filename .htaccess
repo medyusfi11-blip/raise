@@ -1,0 +1,20 @@
+# ============================================================
+# Ibrahim Azzouz Cars — Root .htaccess
+# Rewrites all requests into the public/ directory
+# ============================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # If the request is NOT already targeting public/
+    RewriteCond %{REQUEST_URI} !^/public/
+    # Rewrite everything into public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Deny access to sensitive directories
+<IfModule !mod_rewrite.c>
+    <FilesMatch "\.(sql|log|ini)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
